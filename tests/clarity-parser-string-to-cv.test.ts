@@ -25,7 +25,7 @@ describe("verify string to cv conversion", () => {
     });
     expect(result).toEqual({
       type: "tuple",
-      value: { data: { a: intCV(12345) }, type: ClarityType.Tuple },
+      value: { value: { a: intCV(12345) }, type: ClarityType.Tuple },
     });
   });
 });

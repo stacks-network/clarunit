@@ -10,7 +10,8 @@ describe("verify clarity parser for flow tests", () => {
       fs.readFileSync(
         path.join(__dirname, "./contracts/parser-tests/simple-flow.clar"),
         "utf8"
-      )
+      ),
+      simnet
     );
     expect(annotations["test-simple-flow"]).toEqual({});
     // check the two function calls
@@ -37,7 +38,8 @@ describe("verify clarity parser for flow tests", () => {
       fs.readFileSync(
         path.join(__dirname, "./contracts/parser-tests/bad-flow.clar"),
         "utf8"
-      )
+      ),
+      simnet
     );
     expect(annotations["test-bad-flow"]).toEqual({});
     expect(callInfos["test-bad-flow"][0]).toEqual({

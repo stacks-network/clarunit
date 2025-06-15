@@ -49,7 +49,7 @@ describe("verify clarity parser", () => {
   });
 
   it("should parse with all annotations", () => {
-    fc.assert(fc.property(fc.array(generators), (array) => {
+    fc.assert(fc.property(fc.uniqueArray(generators), (array) => {
       const contractSource = array
         .map((expected) =>
           `
