@@ -8,6 +8,7 @@ import {
   extractTestAnnotationsAndCalls,
 } from "./parser/clarity-parser-flow-tests";
 import { expectOk, isValidTestFunction } from "./parser/test-helpers";
+import path from "path";
 
 /**
  * Returns true if the contract is a test contract using the flow convention
@@ -40,8 +41,10 @@ export function generateFlowTests(simnet: any) {
 
         const functionName = functionCall.name;
         const source = simnet.getContractSource(contractFQN)!;
-        const [annotations, functionBodies] =
-          extractTestAnnotationsAndCalls(source);
+        const [annotations, functionBodies] = extractTestAnnotationsAndCalls(
+          source,
+          simnet
+        );
         const functionAnnotations: FunctionAnnotations =
           annotations[functionName] || {};
         const testname = `${functionCall.name}${

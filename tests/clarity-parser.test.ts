@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import * as fs from "fs";
 import { extractTestAnnotations } from "../src/parser/clarity-parser";
+import path from "path";
 
 describe("verify clarity parser", () => {
   it("should parse without annotations", () => {

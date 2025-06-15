@@ -1,6 +1,7 @@
 import * as fs from "fs";
 import { describe, expect, it } from "vitest";
 import { extractTestAnnotationsAndCalls } from "../src/parser/clarity-parser-flow-tests";
+import path from "path";
 
 describe("verify clarity parser for flow tests", () => {
   it("should parse flow test with simple annotations", () => {
