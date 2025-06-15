@@ -1,16 +1,12 @@
 import { describe, expect, it } from "vitest";
 import * as fs from "fs";
-import path from "path";
 import { extractTestAnnotations } from "../src/parser/clarity-parser";
 
 describe("verify clarity parser", () => {
   it("should parse without annotations", () => {
     const result = extractTestAnnotations(
       fs.readFileSync(
-        path.join(
-          __dirname,
-          "contracts/parser-tests/no-annotations.clar"
-        ),
+        path.join(__dirname, "contracts/parser-tests/no-annotations.clar"),
         "utf8"
       )
     );
@@ -20,10 +16,7 @@ describe("verify clarity parser", () => {
   it("should parse with simple annotations", () => {
     const result = extractTestAnnotations(
       fs.readFileSync(
-        path.join(
-          __dirname,
-          "contracts/parser-tests/simple-annotations.clar"
-        ),
+        path.join(__dirname, "contracts/parser-tests/simple-annotations.clar"),
         "utf8"
       )
     );
@@ -35,10 +28,7 @@ describe("verify clarity parser", () => {
   it("should parse with all annotations", () => {
     const result = extractTestAnnotations(
       fs.readFileSync(
-        path.join(
-          __dirname,
-          "contracts/parser-tests/all-annotations.clar"
-        ),
+        path.join(__dirname, "contracts/parser-tests/all-annotations.clar"),
         "utf8"
       )
     );
@@ -60,10 +50,7 @@ describe("verify clarity parser", () => {
   it("should parse with bad annotations", () => {
     const result = extractTestAnnotations(
       fs.readFileSync(
-        path.join(
-          __dirname,
-          "contracts/parser-tests/bad-annotations.clar"
-        ),
+        path.join(__dirname, "contracts/parser-tests/bad-annotations.clar"),
         "utf8"
       )
     );
