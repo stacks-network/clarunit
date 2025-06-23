@@ -1,8 +1,7 @@
 import * as fs from "fs";
-import path from "path";
 import { describe, expect, it } from "vitest";
 import { extractTestAnnotationsAndCalls } from "../src/parser/clarity-parser-flow-tests";
-import { bufferCV } from "@stacks/transactions";
+import path from "path";
 
 describe("verify clarity parser for flow tests", () => {
   it("should parse flow test with simple annotations", () => {
@@ -10,7 +9,8 @@ describe("verify clarity parser for flow tests", () => {
       fs.readFileSync(
         path.join(__dirname, "./contracts/parser-tests/simple-flow.clar"),
         "utf8"
-      )
+      ),
+      simnet
     );
     expect(annotations["test-simple-flow"]).toEqual({});
     // check the two function calls
@@ -37,7 +37,8 @@ describe("verify clarity parser for flow tests", () => {
       fs.readFileSync(
         path.join(__dirname, "./contracts/parser-tests/bad-flow.clar"),
         "utf8"
-      )
+      ),
+      simnet
     );
     expect(annotations["test-bad-flow"]).toEqual({});
     expect(callInfos["test-bad-flow"][0]).toEqual({

@@ -1,6 +1,5 @@
 import { ParsedTransactionResult, tx } from "@hirosystems/clarinet-sdk";
 import * as fs from "fs";
-import path from "path";
 import { describe, it } from "vitest";
 import {
   CallInfo,
@@ -9,6 +8,7 @@ import {
   extractTestAnnotationsAndCalls,
 } from "./parser/clarity-parser-flow-tests";
 import { expectOk, isValidTestFunction } from "./parser/test-helpers";
+import path from "path";
 
 /**
  * Returns true if the contract is a test contract using the flow convention
@@ -41,12 +41,15 @@ export function generateFlowTests(simnet: any) {
 
         const functionName = functionCall.name;
         const source = simnet.getContractSource(contractFQN)!;
-        const [annotations, functionBodies] =
-          extractTestAnnotationsAndCalls(source);
+        const [annotations, functionBodies] = extractTestAnnotationsAndCalls(
+          source,
+          simnet
+        );
         const functionAnnotations: FunctionAnnotations =
           annotations[functionName] || {};
-        const testname = `${functionCall.name}${functionAnnotations.name ? `: ${functionAnnotations.name}` : ""
-          }`;
+        const testname = `${functionCall.name}${
+          functionAnnotations.name ? `: ${functionAnnotations.name}` : ""
+        }`;
         it(testname, () => {
           writeToLogFile(`\n\n${testname}\n\n`);
           if (hasDefaultPrepareFunction && !functionAnnotations.prepare)
@@ -56,7 +59,13 @@ export function generateFlowTests(simnet: any) {
 
           const functionBody = functionBodies[functionName] || [];
 
-          mineBlocksFromFunctionBody(contractFQN, functionName, functionBody, simnet, accounts);
+          mineBlocksFromFunctionBody(
+            contractFQN,
+            functionName,
+            functionBody,
+            simnet,
+            accounts
+          );
         });
       });
     });
