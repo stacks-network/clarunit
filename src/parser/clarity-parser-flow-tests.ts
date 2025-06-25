@@ -138,7 +138,6 @@ function extractUnwrapInfo(statement: string, simnet: Simnet): CallInfo | null {
     /\(unwrap! \(contract-call\? (?:\.(.+?)|'(.+?)) (.+?)(( .+?)*)\)/
   );
   if (!match) return null;
-  console.log(`extracting unwrap info from ${match[1]} ${match[2]}`);
   // match[1] is the contract address,
   const [contractAddress, contractName] = match[2]
     ? match[2].split(".")
@@ -148,9 +147,6 @@ function extractUnwrapInfo(statement: string, simnet: Simnet): CallInfo | null {
   let fn: any;
   simnet.getContractsInterfaces().forEach((contract, contractFQN) => {
     const [ctrAddress, ctrName] = contractFQN.split(".");
-    console.log(
-      `checking contract ${ctrAddress} ${ctrName} for function ${functionName}`
-    );
     if (contractAddress === ctrAddress && ctrName === contractName) {
       fn = contract.functions.find((f) => f.name === functionName);
       if (!fn) {
