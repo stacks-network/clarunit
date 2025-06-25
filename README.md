@@ -1,6 +1,6 @@
 # clarunit
 
-This package allows you to write unit tests for Clarity smart contracts in the 
+This package allows you to write unit tests for Clarity smart contracts in the
 Clarity language itself, as opposed to TypeScript. `clarunit` will automatically
 detect test files and test functions.
 
@@ -82,7 +82,7 @@ You can add certain comment annotations before unit test functions to add
 information or modify behaviour. Annotations are optional.
 
 | Annotation            | Description                                                                                                                                  |
-|-----------------------|----------------------------------------------------------------------------------------------------------------------------------------------|
+| --------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
 | `@name`               | Give the unit test a name, this text shows up when running unit tests.                                                                       |
 | `@no-prepare`         | Do not call the `prepare` function before running this unit test.                                                                            |
 | `@prepare`            | Override the default `prepare` function with another. The function name should follow the tag.                                               |
@@ -122,3 +122,18 @@ Examples:
 ;; @mine-blocks-before 5
 (define-public (test-six) (ok true))
 ```
+
+### Flow Tests
+
+Normal unit tests run always through the test contract using the deployer account. With flow tests it is possible to test a sequence of contract calls with different accounts.
+
+The tests have to follow the following structure:
+
+- flow test contract names end with `_flow_test`
+- test functions in flow test contracts start with `test-`
+- the body of a test function consists of a `begin` with a sequence of `try!` or `unwrap!` calls.
+- `try!` calls call another function without arguments in the test contract
+- `unwrap!` calls can call any contract function
+- each of these calls must be annotated with the caller annotation
+
+The example contains a simple flow test in `example/tests/my-contract_flow_test.clar`
