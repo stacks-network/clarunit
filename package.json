@@ -1,6 +1,6 @@
 {
   "name": "@stacks/clarunit",
-  "version": "0.0.2",
+  "version": "0.1.0",
   "description": "Clarunit, enables writing unit tests in Clarity",
   "main": "src/index.ts",
   "bin": "src/cli.ts",
