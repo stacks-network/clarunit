@@ -3,7 +3,7 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-## unreleased
+## [0.1.0](https://github.com/stacks-network/clarunit) (2025-06-25)
 Update dependencies to make it compatible with stacks.js version 7.x 
 
 ## [0.0.2](https://github.com/stacks-network/stacks-test-tools) (2024-01-22)
