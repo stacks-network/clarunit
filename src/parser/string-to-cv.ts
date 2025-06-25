@@ -66,7 +66,12 @@ export function stringToCV(
     case "principal":
       const [address, name] = arg.split(".");
       return name
-        ? { type: "principal", value: Cl.contractPrincipal(address, name) }
+        ? address
+          ? { type: "principal", value: Cl.contractPrincipal(address, name) }
+          : {
+              type: "principal",
+              value: Cl.contractPrincipal(simnet.deployer, name),
+            }
         : { type: "principal", value: Cl.standardPrincipal(address) };
     case "bool":
       return { type: "bool", value: Cl.bool(arg === "true") };

@@ -30,6 +30,29 @@ describe("verify clarity parser for flow tests", () => {
         functionName: "my-test-function2",
       },
     });
+    expect(callInfos["test-simple-flow"][2]).toEqual({
+      callAnnotations: { caller: "wallet_1" },
+      callInfo: {
+        args: [
+          {
+            type: "principal",
+            value: {
+              type: "contract",
+              value:
+                "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.pox4-self-service-multi",
+            },
+          },
+          {
+            type: "none",
+            value: {
+              type: "none",
+            },
+          },
+        ],
+        contractName: "ST000000000000000000002AMW42H.pox-4",
+        functionName: "allow-contract-caller",
+      },
+    });
   });
 
   it("should parse flow test with bad annotations", () => {

@@ -36,7 +36,10 @@ const callRegex =
  * @param contractSource
  * @returns
  */
-export function extractTestAnnotationsAndCalls(contractSource: string, simnet: Simnet) {
+export function extractTestAnnotationsAndCalls(
+  contractSource: string,
+  simnet: Simnet
+) {
   const functionAnnotations: any = {};
   const functionBodies: any = {};
   contractSource = contractSource.replace(/\r/g, "");
@@ -114,7 +117,7 @@ export function extractContractCalls(lastFunctionBody: string, simnet: Simnet) {
     let callInfo = extractUnwrapInfo(call, simnet);
     if (!callInfo) {
       // try to extract call info from (try! (my-function))
-      callInfo = extractCallInfo(call);
+      callInfo = extractTryInfo(call);
     }
     if (callInfo) {
       contractCalls.push({ callAnnotations, callInfo });
@@ -127,22 +130,24 @@ export function extractContractCalls(lastFunctionBody: string, simnet: Simnet) {
 
 /**
  * handle (unwrap! (contract-call? ...)) statements
- * @param statement 
- * @returns 
+ * @param statement
+ * @returns
  */
 function extractUnwrapInfo(statement: string, simnet: Simnet): CallInfo | null {
   const match = statement.match(
-    /\(unwrap! \(contract-call\? \.(.+?) (.+?)(( .+?)*)\)/
+    /\(unwrap! \(contract-call\? (?:\.(.+?)|'(.+?)) (.+?)(( .+?)*)\)/
   );
   if (!match) return null;
-
-  const contractName = match[1];
-  const functionName = match[2];
-  const argStrings = splitArgs(match[3]);
+  // match[1] is the contract address,
+  const [contractAddress, contractName] = match[2]
+    ? match[2].split(".")
+    : [simnet.deployer, match[1]];
+  const functionName = match[3];
+  const argStrings = splitArgs(match[4]);
   let fn: any;
   simnet.getContractsInterfaces().forEach((contract, contractFQN) => {
-    const [_, ctrName] = contractFQN.split(".");
-    if (ctrName === contractName) {
+    const [ctrAddress, ctrName] = contractFQN.split(".");
+    if (contractAddress === ctrAddress && ctrName === contractName) {
       fn = contract.functions.find((f) => f.name === functionName);
       if (!fn) {
         throw `function ${functionName} not found in contract ${contractName}`;
@@ -157,20 +162,23 @@ function extractUnwrapInfo(statement: string, simnet: Simnet): CallInfo | null {
   );
 
   return {
-    contractName,
+    contractName: contractAddress
+      ? `${contractAddress}.${contractName}`
+      : contractName,
     functionName,
     args,
   };
 }
 
-
-function extractCallInfo(statement: string) {
+function extractTryInfo(statement: string) {
   const match = statement.match(/\(try! \((.+?)\)\)/);
   if (!match) return null;
-  return { contractName: "", functionName: match[1], args: [] };
+  return {
+    contractName: "",
+    functionName: match[1],
+    args: [],
+  };
 }
-
-
 
 // take a string containing function arguments and
 // split them correctly into an array of argument strings
