@@ -135,5 +135,8 @@ The tests have to follow the following structure:
 - `try!` calls call another function without arguments in the test contract
 - `unwrap!` calls can call any contract function
 - each of these calls must be annotated with the caller annotation
+- each of these calls must be in a single line.
+
+Use `;; @format-ignore` as annotation of the test function to prevent `clarinet format` from breaking the flow test.
 
 The example contains a simple flow test in `example/tests/my-contract_flow_test.clar`
