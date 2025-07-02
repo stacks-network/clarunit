@@ -4,7 +4,10 @@ description = ''
 authors = []
 telemetry = false
 cache_dir = './.cache'
-requirements = []
+requirements =[
+    {contract_id ="ST000000000000000000002AMW42H.pox-4"}
+]
+
 [contracts.my-contract]
 path = 'contracts/my-contract.clar'
 clarity_version = 2
@@ -14,6 +17,12 @@ epoch = 2.4
 path = 'tests/my-contract_test.clar'
 clarity_version = 2
 epoch = 2.4
+
+[contracts.my-contract_flow_test]
+path = 'tests/my-contract_flow_test.clar'
+clarity_version = 2
+epoch = 2.4
+
 [repl.analysis]
 passes = ['check_checker']
 
