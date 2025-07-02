@@ -14,7 +14,7 @@
   "license": "ISC",
   "dependencies": {
     "@hirosystems/clarinet-sdk": "3.1.0",
-    "@stacks/clarunit": "file:../",
+    "@stacks/clarunit": "^0.1.0",
     "@stacks/transactions": "^7.1.0",
     "chokidar-cli": "^3.0.0",
     "typescript": "^5.8.3",
