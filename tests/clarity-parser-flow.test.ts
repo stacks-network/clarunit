@@ -74,4 +74,17 @@ describe("verify clarity parser for flow tests", () => {
     });
     expect(callInfos["test-bad-flow"].length).toEqual(1);
   });
+
+  it("should return empty results when no test functions exist", () => {
+    const [annotations, callInfos] = extractTestAnnotationsAndCalls(
+      fs.readFileSync(
+        path.join(__dirname, "./contracts/parser-tests/no-flow.clar"),
+        "utf8"
+      ),
+      simnet
+    );
+
+    expect(annotations).toEqual({});
+    expect(callInfos).toEqual({});
+  });
 });

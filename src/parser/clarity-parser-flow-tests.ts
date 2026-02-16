@@ -81,6 +81,9 @@ export function extractTestAnnotationsAndCalls(
       lastFunctionName = functionName;
     }
   }
+  if (indexStart < 0) {
+    return [functionAnnotations, functionBodies];
+  }
   const lastFunctionBody = contractSource.substring(indexStart + headerLength);
   contractCalls = extractContractCalls(lastFunctionBody, simnet);
   functionBodies[lastFunctionName] = contractCalls;

@@ -14,3 +14,24 @@ strict = false
 trusted_sender = false
 trusted_caller = false
 callee_filter = false
+
+[contracts.all-annotations]
+path = "contracts/all-annotations.clar"
+
+[contracts.bad-annotations]
+path = "contracts/bad-annotations.clar"
+
+[contracts.bad-flow]
+path = "contracts/bad-flow.clar"
+
+[contracts.no-annotations]
+path = "contracts/no-annotations.clar"
+
+[contracts.no-flow]
+path = "contracts/no-flow.clar"
+
+[contracts.simple-annotations]
+path = "contracts/simple-annotations.clar"
+
+[contracts.simple-flow]
+path = "contracts/simple-flow.clar"
