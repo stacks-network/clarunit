@@ -1,4 +1,4 @@
-import { ParsedTransactionResult } from "@hirosystems/clarinet-sdk";
+import { ParsedTransactionResult } from "@stacks/clarinet-sdk";
 import { Cl, ClarityType, cvToString } from "@stacks/transactions";
 import { expect } from "vitest";
 

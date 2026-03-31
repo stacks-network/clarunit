@@ -7,6 +7,7 @@
   )
 )
 
+;; @caller 'ST000000000000000000002AMW42H
 (define-public (test-a-times-b2)
   (begin
     (asserts! (is-eq (ok u108) (contract-call? .my-contract a-times-b u9 u12))

@@ -32,16 +32,16 @@
   },
   "homepage": "https://github.com/stacks-network/clarunit#readme",
   "dependencies": {
-    "@hirosystems/clarinet-sdk": "3.1.0",
-    "@stacks/common": "^7.0.2",
-    "@stacks/transactions": "7.1.0",
+    "@stacks/clarinet-sdk": "3.15.1",
+    "@stacks/common": "^7.3.1",
+    "@stacks/transactions": "7.4.0",
     "chokidar-cli": "^3.0.0",
-    "typescript": "5.8.3",
-    "vite": "6.3.5",
-    "vitest": "3.2.3",
-    "vitest-environment-clarinet": "2.3.0"
+    "typescript": "6.0.2",
+    "vite": "8.0.3",
+    "vitest": "4.1.2",
+    "vitest-environment-clarinet": "3.0.2"
   },
   "devDependencies": {
-    "fast-check": "4.1.1"
+    "fast-check": "4.6.0"
   }
 }

@@ -114,7 +114,7 @@ export function extractContractCalls(lastFunctionBody: string, simnet: Simnet) {
       if (prop) callAnnotations[prop] = value ?? true;
     }
     // try to extract call info from (unwrap! (contract-call? ...))
-    let callInfo = extractUnwrapInfo(call, simnet);
+    let callInfo = extractUnwrapInfo(call, simnet, callAnnotations);
     if (!callInfo) {
       // try to extract call info from (try! (my-function))
       callInfo = extractTryInfo(call);
@@ -133,17 +133,42 @@ export function extractContractCalls(lastFunctionBody: string, simnet: Simnet) {
  * @param statement
  * @returns
  */
-function extractUnwrapInfo(statement: string, simnet: Simnet): CallInfo | null {
+function extractUnwrapInfo(
+  statement: string,
+  simnet: Simnet,
+  callAnnotations: FunctionAnnotations
+): CallInfo | null {
+  // Match contract-call header only (contract + function name).
+  // Args are extracted separately using balanced-paren counting
+  // to avoid catastrophic backtracking with nested list/tuple args.
   const match = statement.match(
-    /\(unwrap! \(contract-call\? (?:\.(.+?)|'(.+?)) (.+?)(( .+?)*)\)/
+    /\(unwrap!\s+\(contract-call\?\s+(?:\.(\S+)|'(\S+))\s+(\S+)/m
   );
   if (!match) return null;
+
+  // Find args: everything between the function name and the balanced
+  // closing paren of (contract-call? ...)
+  const headerEnd = match.index! + match[0].length;
+  let depth = 2; // we're inside (unwrap! (contract-call? ...
+  let contractCallClose = -1;
+  for (let i = headerEnd; i < statement.length; i++) {
+    if (statement[i] === "(") depth++;
+    if (statement[i] === ")") depth--;
+    if (depth === 1) {
+      // found closing ) of (contract-call? ...)
+      contractCallClose = i;
+      break;
+    }
+  }
+  if (contractCallClose === -1) return null;
+  const argsRaw = statement.slice(headerEnd, contractCallClose);
+
   // match[1] is the contract address,
   const [contractAddress, contractName] = match[2]
     ? match[2].split(".")
     : [simnet.deployer, match[1]];
   const functionName = match[3];
-  const argStrings = splitArgs(match[4]);
+  const argStrings = splitArgs(argsRaw);
   let fn: any;
   simnet.getContractsInterfaces().forEach((contract, contractFQN) => {
     const [ctrAddress, ctrName] = contractFQN.split(".");
@@ -155,7 +180,15 @@ function extractUnwrapInfo(statement: string, simnet: Simnet): CallInfo | null {
     }
   });
   if (!fn) {
-    throw `function ${functionName} not found in contract ${contractName}`;
+    if (callAnnotations["type-hints"]) {
+      fn = {
+        args: (callAnnotations["type-hints"] as string)
+          .split(",")
+          .map((s) => ({ type: parseTypeHint(s.trim()) })),
+      };
+    } else {
+      throw `function ${functionName} of ${contractName} not found in Clarinet toml and no type-hints provided`;
+    }
   }
   const args = fn.args.map((arg: any, index: number) =>
     stringToCV(argStrings[index], arg.type)
@@ -196,8 +229,9 @@ function splitArgs(argString: string): string[] {
     if (char === "(") rbrackets++;
     if (char === ")") rbrackets--;
 
+    const isWhitespace = char === " " || char === "\n" || char === "\t" || char === "\r";
     const atLastChar = i === argString.length - 1;
-    if ((char === " " && brackets === 0 && rbrackets === 0) || atLastChar) {
+    if ((isWhitespace && brackets === 0 && rbrackets === 0) || atLastChar) {
       const newArg = argString.slice(argStart, i + (atLastChar ? 1 : 0));
       if (newArg.trim()) {
         splitArgs.push(newArg.trim());
@@ -207,4 +241,47 @@ function splitArgs(argString: string): string[] {
   }
 
   return splitArgs;
+}
+
+/**
+ * Parse type hint string into ContractInterfaceAtomType
+ * @param typeHint string like "uint128", "(optional uint128)", etc.
+ * @returns ContractInterfaceAtomType
+ */
+function parseTypeHint(typeHint: string): any {
+  typeHint = typeHint.trim();
+
+  // Handle parentheses wrapped types like (optional uint128)
+  if (typeHint.startsWith("(") && typeHint.endsWith(")")) {
+    const inner = typeHint.slice(1, -1).trim();
+    const parts = inner.split(" ");
+
+    if (parts[0] === "optional") {
+      return {
+        optional: parseTypeHint(parts.slice(1).join(" ")),
+      };
+    }
+
+    // Add other complex type handling as needed
+  }
+
+  // Handle simple types
+  switch (typeHint) {
+    case "uint":
+    case "uint128":
+      return "uint128";
+    case "int":
+    case "int128":
+      return "int128";
+    case "bool":
+      return "bool";
+    case "principal":
+      return "principal";
+    case "trait_reference":
+      return "trait_reference";
+    case "none":
+      return "none";
+    default:
+      throw new Error(`Unsupported type hint: ${typeHint}`);
+  }
 }

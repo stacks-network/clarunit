@@ -63,6 +63,8 @@ export function stringToCV(
       return { type: "uint", value: Cl.uint(arg.slice(1)) };
     case "int128":
       return { type: "int", value: Cl.int(arg) };
+    case "bool":
+      return { type: "bool", value: Cl.bool(arg === "true") };
     case "principal":
       const [address, name] = arg.split(".");
       return name
@@ -73,8 +75,16 @@ export function stringToCV(
               value: Cl.contractPrincipal(simnet.deployer, name),
             }
         : { type: "principal", value: Cl.standardPrincipal(address) };
-    case "bool":
-      return { type: "bool", value: Cl.bool(arg === "true") };
+    case "trait_reference":
+      const [addressTrait, nameTrait] = arg.split(".");
+      return {
+        type: "trait_reference",
+        value: Cl.contractPrincipal(
+          // handle both fully qualified contract ids and .contract-name
+          addressTrait.length > 1 ? addressTrait.substring(1) : simnet.deployer,
+          nameTrait
+        ),
+      };
   }
   const typeDescriptor = Object.keys(type)[0];
   switch (typeDescriptor) {
@@ -110,8 +120,33 @@ export function stringToCV(
           ),
         };
       }
+    case "list": {
+      const listType = (type as { list: { type: ContractInterfaceAtomType; length: number } }).list;
+      // strip outer (list ... )
+      const inner = arg.replace(/^\(list\s*/, "").replace(/\)$/, "").trim();
+      if (!inner) {
+        return { type: "list", value: Cl.list([]) };
+      }
+      // split list elements respecting nested parens/braces
+      const elements: string[] = [];
+      let start = 0;
+      let depth = 0;
+      for (let i = 0; i < inner.length; i++) {
+        if (inner[i] === "(" || inner[i] === "{") depth++;
+        if (inner[i] === ")" || inner[i] === "}") depth--;
+        if ((inner[i] === " " && depth === 0) || i === inner.length - 1) {
+          const el = inner.slice(start, i + (i === inner.length - 1 ? 1 : 0)).trim();
+          if (el) elements.push(el);
+          start = i + 1;
+        }
+      }
+      const values = elements.map(
+        (el) => stringToCV(el, listType.type).value
+      );
+      return { type: "list", value: Cl.list(values) };
+    }
     default:
-      throw new Error(`Unsupported type ${type}`);
+      throw new Error(`Unsupported type ${arg}, ${typeDescriptor}`);
   }
 }
 

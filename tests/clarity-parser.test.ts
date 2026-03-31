@@ -46,6 +46,10 @@ describe("verify clarity parser", () => {
       "mine-before": "20",
       name: "all annotation test 2",
     });
+
+    expect(result["test-all-annotations-3"]).toEqual({
+      caller: "'ST000000000000000000002AMW42H",
+    });
   });
 
   it("should parse with bad annotations", () => {

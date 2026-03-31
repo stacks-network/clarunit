@@ -11,3 +11,7 @@
 ;; @caller wallet_2
 (define-public (test-all-annotations-2)
     (ok true))
+
+;; @caller 'ST000000000000000000002AMW42H
+(define-public (test-all-annotations-3)
+    (ok true))

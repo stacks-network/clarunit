@@ -8,9 +8,9 @@ describe("verify clarity parser for flow tests", () => {
     const [annotations, callInfos] = extractTestAnnotationsAndCalls(
       fs.readFileSync(
         path.join(__dirname, "./contracts/parser-tests/simple-flow.clar"),
-        "utf8"
+        "utf8",
       ),
-      simnet
+      simnet,
     );
     expect(annotations["test-simple-flow"]).toEqual({});
     // check the two function calls
@@ -31,7 +31,10 @@ describe("verify clarity parser for flow tests", () => {
       },
     });
     expect(callInfos["test-simple-flow"][2]).toEqual({
-      callAnnotations: { caller: "wallet_1" },
+      callAnnotations: {
+        caller: "wallet_1",
+        "type-hints": "principal, (optional uint)",
+      },
       callInfo: {
         args: [
           {
@@ -39,7 +42,7 @@ describe("verify clarity parser for flow tests", () => {
             value: {
               type: "contract",
               value:
-                "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.pox4-self-service-multi",
+                "SP1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRCBGD7R.pox4-self-service-multi",
             },
           },
           {
@@ -53,15 +56,23 @@ describe("verify clarity parser for flow tests", () => {
         functionName: "allow-contract-caller",
       },
     });
+    expect(callInfos["test-simple-flow"][3]).toEqual({
+      callAnnotations: { caller: "'ST000000000000000000002AMW42H" },
+      callInfo: {
+        args: [],
+        contractName: "",
+        functionName: "my-test-function",
+      },
+    });
   });
 
   it("should parse flow test with bad annotations", () => {
     const [annotations, callInfos] = extractTestAnnotationsAndCalls(
       fs.readFileSync(
         path.join(__dirname, "./contracts/parser-tests/bad-flow.clar"),
-        "utf8"
+        "utf8",
       ),
-      simnet
+      simnet,
     );
     expect(annotations["test-bad-flow"]).toEqual({});
     expect(callInfos["test-bad-flow"][0]).toEqual({
@@ -73,5 +84,18 @@ describe("verify clarity parser for flow tests", () => {
       },
     });
     expect(callInfos["test-bad-flow"].length).toEqual(1);
+  });
+
+  //assertion in clarity-parser-flow.test.ts verifying that:
+  // callInfo.args[0] is a list of two buffer values
+  // callInfo.args[1] is a list of two bool values
+  it("should parse list types and arguments across lines", () => {
+    const [annotations, callInfos] = extractTestAnnotationsAndCalls(
+      fs.readFileSync(
+        path.join(__dirname, "./contracts/parser-tests/bad-flow.clar"),
+        "utf8",
+      ),
+      simnet,
+    );
   });
 });

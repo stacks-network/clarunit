@@ -1,4 +1,4 @@
-import { ParsedTransactionResult, tx } from "@hirosystems/clarinet-sdk";
+import { ParsedTransactionResult, tx } from "@stacks/clarinet-sdk";
 import * as fs from "fs";
 import { describe, it } from "vitest";
 import {
@@ -8,6 +8,7 @@ import {
   extractTestAnnotationsAndCalls,
 } from "./parser/clarity-parser-flow-tests";
 import { expectOk, isValidTestFunction } from "./parser/test-helpers";
+import { getCaller } from "./clarunit-utils";
 import path from "path";
 
 /**
@@ -100,9 +101,7 @@ function mineBlocksFromFunctionBody(
     const mineBlocksBefore =
       parseInt(callAnnotations["mine-blocks-before"] as string) || 0;
     // get caller address
-    const caller = accounts.get(
-      (callAnnotations["caller"] as string) || "deployer"
-    )!;
+    const caller = getCaller(callAnnotations, accounts);
 
     if (mineBlocksBefore >= 1) {
       if (blockStarted) {

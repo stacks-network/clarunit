@@ -4,7 +4,35 @@ description = ''
 authors = []
 telemetry = false
 cache_dir = './.cache'
-requirements = []
+requirements = [
+    { contract_id = "SP8A9HZ3PKST0S42VM9523Z9NV42SZ026V4K39WH.ccd001-direct-execute"},
+    { contract_id = "SP8A9HZ3PKST0S42VM9523Z9NV42SZ026V4K39WH.ccip024-miamicoin-signal-vote"}
+]
+
+[contracts.annotations_test]
+path = "tests/contracts/generator-tests/annotations_test.clar"
+clarity_version = 3
+epoch = "3.1"
+
+[contracts.annotations_flow_test]
+path = "tests/contracts/generator-tests/annotations_flow_test.clar"
+clarity_version = 3
+epoch = "3.1"
+
+[contracts.contract_call_flow_test]
+path = "tests/contracts/generator-tests/contract-call_flow_test.clar"
+clarity_version = 3
+epoch = "3.1"
+
+[contracts.list-args_flow_test]
+path = "tests/contracts/generator-tests/list-args_flow_test.clar"
+clarity_version = 3
+epoch = "3.1"
+
+[contracts.some-contract]
+path = "tests/contracts/some-contract.clar"
+clarity_version = 3
+epoch = "3.1"
 
 [repl.analysis]
 passes = ['check_checker']
@@ -14,3 +42,11 @@ strict = false
 trusted_sender = false
 trusted_caller = false
 callee_filter = false
+
+
+[repl.remote_data]
+# Enable mainnet execution simulation
+enabled = true
+# Specify the Stacks block height to fork from
+initial_height = 3491155
+use_mainnet_wallets = true
